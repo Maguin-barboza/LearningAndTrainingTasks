@@ -1,10 +1,8 @@
 ﻿using Helpers;
+using LearningAndTrainingTasks.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
-
-using LearningAndTrainingTasks.Models;
 
 
 namespace LearningAndTrainingTasks.ViewModels
@@ -12,17 +10,24 @@ namespace LearningAndTrainingTasks.ViewModels
     public class ShellViewModel
     {
         public ObservableCollection<string> LstMensagemStatus { get; set; } = new ObservableCollection<string>();
+        private List<TxtFile> Files = new List<TxtFile>();
 
         public void btnCreateFiles()
         {
-            TxtFile txtFile = new TxtFile();
-            txtFile.Path = @"C:\Teste\File1.txt";
-            txtFile.TextConent = "File1";
+            Files.Add(new TxtFile { Path = @"C:\Teste\File1.txt", TextConent = "File1" });
+            Files.Add(new TxtFile { Path = @"C:\Teste\File2.txt", TextConent = "File2" });
+            Files.Add(new TxtFile { Path = @"C:\Teste\File3.txt", TextConent = "File3" });
 
-            if (FileHelper.CreateFile(txtFile.Path, txtFile.TextConent))
-                AdicionarMensagemStatus($"Arquivo '{txtFile.Path}' criado com sucesso");
+            foreach(TxtFile file in Files)
+                this.CreateFiles(file);
+        }
+
+        private void CreateFiles(TxtFile file)
+        {
+            if (FileHelper.CreateFile(file.Path, file.TextConent))
+                this.AdicionarMensagemStatus($"Arquivo '{file.Path}' criado com sucesso");
             else
-                AdicionarMensagemStatus("Falha ao criar arquivo. ");
+                this.AdicionarMensagemStatus("Falha ao criar arquivo. ");
         }
 
         private void AdicionarMensagemStatus(string Mensagem)
@@ -30,7 +35,7 @@ namespace LearningAndTrainingTasks.ViewModels
             string Msg;
 
             Msg = $"{DateTime.Now.ToString()} - {Mensagem}";
-            LstMensagemStatus.Add(Msg);
+            this.LstMensagemStatus.Add(Msg);
         }
     }
 }
