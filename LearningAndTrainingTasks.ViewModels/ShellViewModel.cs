@@ -3,7 +3,7 @@ using LearningAndTrainingTasks.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
+using System.Diagnostics;
 
 namespace LearningAndTrainingTasks.ViewModels
 {
@@ -12,29 +12,31 @@ namespace LearningAndTrainingTasks.ViewModels
         public ObservableCollection<string> LstMensagemStatus { get; set; } = new ObservableCollection<string>();
         private List<TxtFile> Files = new List<TxtFile>();
 
-        public void btnCreateFiles()
+        public void btnCreateFilesSync()
         {
-            Files.Add(new TxtFile { Path = @"C:\Teste\File1.txt", TextConent = "File1" });
-            Files.Add(new TxtFile { Path = @"C:\Teste\File2.txt", TextConent = "File2" });
-            Files.Add(new TxtFile { Path = @"C:\Teste\File3.txt", TextConent = "File3" });
+            Stopwatch Timer = new Stopwatch();
+            Timer.Start();
 
-            foreach(TxtFile file in Files)
-                this.CreateFiles(file);
+            TxtFile.CreateFilesSync(7000);
+            this.AdicionarMensagemStatus(Timer.ElapsedMilliseconds.ToString());
+            Timer.Stop();
         }
 
-        private void CreateFiles(TxtFile file)
+        public async void btnCreateFilesAsync()
         {
-            if (FileHelper.CreateFile(file.Path, file.TextConent))
-                this.AdicionarMensagemStatus($"Arquivo '{file.Path}' criado com sucesso");
-            else
-                this.AdicionarMensagemStatus("Falha ao criar arquivo. ");
+            Stopwatch Timer = new Stopwatch();
+            Timer.Start();
+
+            await TxtFile.CreateFilesAsync(7000);
+            this.AdicionarMensagemStatus(Timer.ElapsedMilliseconds.ToString());
+            Timer.Stop();
         }
 
         private void AdicionarMensagemStatus(string Mensagem)
         {
             string Msg;
 
-            Msg = $"{DateTime.Now.ToString()} - {Mensagem}";
+            Msg = $"{Mensagem}";
             this.LstMensagemStatus.Add(Msg);
         }
     }
